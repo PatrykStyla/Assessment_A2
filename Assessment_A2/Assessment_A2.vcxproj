@@ -152,7 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Admin.cpp" />
-    <ClCompile Include="Assessment_A2.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Family.cpp" />
     <ClCompile Include="Location.cpp" />
     <ClCompile Include="User.cpp" />

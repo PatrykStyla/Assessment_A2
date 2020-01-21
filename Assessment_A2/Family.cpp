@@ -2,5 +2,5 @@
 
 Family::Family()
 {
-	Location location;
+
 }
