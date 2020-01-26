@@ -3,6 +3,11 @@
 #include <vector>
 #include <string>
 
+enum class UserLocation
+{
+    Floria, Paris, Milan, Tokyo,
+};
+
 class Location
 {
 public:
@@ -13,7 +18,10 @@ public:
 
 	std::vector<std::string> m_sActivity;
 	std::vector<float> m_fCostPerPerson;
+	/* This lists the available locations based on the activity */
 	std::vector<std::vector<std::string>> m_sAvailableLocations;
+	/* This lists the available activities based on the location */
+	std::vector<std::vector<std::string>> m_sAvaliableActivities;
 
 	Location();
 };

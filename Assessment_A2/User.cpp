@@ -9,3 +9,11 @@ User::User(std::string sName, int iYearsOld)
 	// Check if person is a child
 	m_iYearsOld < m_iIsconsideredChild ? true : false;
 }
+
+User::~User()
+{
+#ifdef _DEBUG
+	std::cout << "User: " << m_sName << " destroyed\n";
+#endif // DEBUG
+
+}
