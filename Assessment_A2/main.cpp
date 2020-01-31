@@ -10,31 +10,64 @@
 
 using json = nlohmann::json;
 
-void SaveToJSON()
+void SaveToJSON(Family &family)
 {
 
     json j;
 
-    j["Family"]["name"] = "family name";
-	j["Family"]["user"] = { // Those will be [] in the .json
-		// Properties of the objects
-		{ 
-			{"name", "username"}, {"age", 1}, {"totalCost", 10000}
-		}, 
-		// Properties of the objects
-		{ 
-			{"name", "username2"}, {"age2", 2}, {"totalCost2", 20000}
-		} 
-	}; // Those will be [] in the .json
+	// Create the object and add the c++ obj properties
 
+
+    j["Family"]["name"] = family.m_sFamilyName;
+	j["Family"]["totalCost"] = family.m_iTotalCostOfUsers;
+
+
+	for (auto user : family.m_clsUsers)
+	{
+		// Add the properties to the family object
+		j["Family"]["user"].emplace_back() = { {"name", user->m_sName}, {"age", user->m_iYearsOld}, {"totalCost", 10000} };
+	}
 	// This will ad another object at the end
-	j["Family"]["user"].emplace_back() = { { "name", "username3" }, { "age3", 3 }, { "totalCost3", 30000 } };
+
+
 
     std::ofstream myfile;
     myfile.open("json.json");
     myfile << j.dump();
     myfile.close();
 }
+
+void LoadFromJSON(std::string sfamilyName)
+{
+	// Read a json file with name of the family
+	std::ifstream i(sfamilyName);
+
+	if (i)
+	{
+        json j;
+        // Load the json into the json class
+        i >> j;
+		// Create the family object we will put the json data here
+		Family family(sfamilyName);
+
+		for (auto users : j["Family"]["user"])
+		{
+			std::cout << users;
+			std::shared_ptr<User> user = std::make_shared<User>(users["name"], users["age"]);
+			user->m_iTotalCost = users["totalCost"];
+			family.m_clsUsers.push_back(user);
+		}
+	}
+	else
+	{
+		// No such file was found
+	}
+
+
+
+	// Load the data to the c++ obj
+}
+
 /* Will handle the input of a number, validate it and return the value when its correct*/
 int ValidateNumberInput()
 {
@@ -187,7 +220,7 @@ void AddMoreUsers(Family &family)
 
 int main()
 {
-	SaveToJSON();
+	LoadFromJSON("json.json");
 
 	Location locations;
 	std::string sName, sFamilyName, sChoice;
@@ -220,6 +253,7 @@ int main()
 	// Check if user wants to add more users to the family
 	AddMoreUsers(family);
 
+	SaveToJSON(family);
 	// Select the destination
 
 	std::cout << "select\n\n";

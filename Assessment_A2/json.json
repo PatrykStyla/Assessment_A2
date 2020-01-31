@@ -1,1 +1,28 @@
-{"Family":{"name":"family name","user":[{"age":1,"name":"username","totalCost":10000},{"age2":2,"name":"username2","totalCost2":20000},{"age3":3,"name":"username3","totalCost3":30000}]}}
+{
+    "Family": {
+        "name": "1",
+        "totalCost": 0,
+        "user": [
+            {
+                "age": 2,
+                "name": "1",
+                "totalCost": 10000
+            },
+            {
+                "age": 2,
+                "name": "2",
+                "totalCost": 10000
+            },
+            {
+                "age": 3,
+                "name": "3",
+                "totalCost": 10000
+            },
+            {
+                "age": 4,
+                "name": "4",
+                "totalCost": 10000
+            }
+        ]
+    }
+}
