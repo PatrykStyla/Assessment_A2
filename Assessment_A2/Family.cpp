@@ -7,9 +7,7 @@ Family::Family(std::string FamilyName)
 
 Family::~Family()
 {
-#ifdef _DEBUG
-    std::cout << "Family: " << m_sFamilyName << " destroyed\n";
-#endif // DEBUG
+	std::cout << "Family: " << m_sFamilyName << " destroyed\n";
 }
 
 void Family::SetUserLocation(std::string sLocation)

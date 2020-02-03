@@ -10,65 +10,31 @@
 
 using json = nlohmann::json;
 
-void SaveToJSON(Family &family)
+void SaveToJSON()
 {
 
     json j;
 
-	// Create the object and add the c++ obj properties
+    j["Family"]["name"] = "family name";
+	j["Family"]["user"] = { // Those will be [] in the .json
+		// Properties of the objects
+		{ 
+			{"name", "username"}, {"age", 1}, {"totalCost", 10000}
+		}, 
+		// Properties of the objects
+		{ 
+			{"name", "username2"}, {"age2", 2}, {"totalCost2", 20000}
+		} 
+	}; // Those will be [] in the .json
 
-
-    j["Family"]["name"] = family.m_sFamilyName;
-	j["Family"]["totalCost"] = family.m_iTotalCostOfUsers;
-
-
-	for (auto user : family.m_clsUsers)
-	{
-		// Add the properties to the family object
-		j["Family"]["user"].emplace_back() = { {"name", user->m_sName}, {"age", user->m_iYearsOld}, {"totalCost", 10000} };
-	}
 	// This will ad another object at the end
-	
+	j["Family"]["user"].emplace_back() = { { "name", "username3" }, { "age3", 3 }, { "totalCost3", 30000 } };
+
     std::ofstream myfile;
-	myfile.open(family.m_sFamilyName + ".json");
+    myfile.open("json.json");
     myfile << j.dump();
     myfile.close();
 }
-
-Family *LoadFromJSON(std::string sfamilyName)
-{
-	// Read a json file with name of the family
-	std::ifstream i(sfamilyName);
-
-	// File with this name exists
-	if (i)
-	{
-        json j;
-        // Load the json into the json class
-        i >> j;
-		// Create the family object we will put the json data here
-		Family family(sfamilyName);
-
-		for (auto users : j["Family"]["user"])
-		{
-			std::cout << users << "\n";
-			std::shared_ptr<User> user = std::make_shared<User>(users["name"], users["age"]);
-			user->m_iTotalCost = users["totalCost"];
-			family->m_clsUsers.push_back(user);
-		}
-
-		return family;
-	}
-	else
-	{
-		// No such file was found
-		std::cout << "A family with the name " << sfamilyName << " does not exist.\n";
-
-		return nullptr;
-	}
-	// Load the data to the c++ obj
-}
-
 /* Will handle the input of a number, validate it and return the value when its correct*/
 int ValidateNumberInput()
 {
@@ -89,7 +55,6 @@ int ValidateNumberInput()
 
 	return iNumberToValidate;
 }
-
 
 void SelectLocation(Location& locations, Family& family)
 {
@@ -154,15 +119,15 @@ void ActivitiesInEachLocation(Location& locations)
 			std::cin >> sChoice;
 			std::cout << "\n";
 
-			if (std::regex_match(sChoice, std::regex("[1y](?:es)?", std::regex_constants::icase)))
+			if (std::regex_match(sChoice, std::regex("[y](?:es)?", std::regex_constants::icase)))
 			{
 				bOtherLocation = false;
 				bChoice = true;
 			}
-			else if (std::regex_match(sChoice, std::regex("[1n](?:o)?", std::regex_constants::icase)))
+			else if (std::regex_match(sChoice, std::regex("[n](?:o)?", std::regex_constants::icase)))
 			{
-				bChoice = false;
 				bOtherLocation = false;
+				bChoice = false;
 			}
 			else
 			{
@@ -174,7 +139,7 @@ void ActivitiesInEachLocation(Location& locations)
 	} while (bChoice);
 }
 
-void AddMoreUsers(Family &family)
+void AddMoreUsers(Family *family)
 {
 	bool bAdditionalMembers = true, bInputError = false;
 	std::string sName, sFamilyName, sChoice;
@@ -190,7 +155,7 @@ void AddMoreUsers(Family &family)
         std::cin >> sChoice;
 
         // Match any capitalization of yes or y
-        if (std::regex_match(sChoice, std::regex("[1y](?:es)?", std::regex_constants::icase)))
+        if (std::regex_match(sChoice, std::regex("[y](?:es)?", std::regex_constants::icase)))
         {
             std::cout << "Enter the name \n";
             std::cin >> sName;
@@ -198,14 +163,16 @@ void AddMoreUsers(Family &family)
             std::cout << "Enter the age \n";
             iAge = ValidateNumberInput();
 
-            std::shared_ptr<User> user = std::make_shared<User>(sName, iAge);
+			User user(sName, iAge);
+
+			user.some_string = &sName;
 
             // Add user to the family
-            family.m_clsUsers.push_back(user);
-
+            family->m_clsUsers.push_back(user);
+			bInputError = false;
         }
         // Match any capitalization of no or n
-        else if (std::regex_match(sChoice, std::regex("[1n](?:o)?", std::regex_constants::icase)))
+        else if (std::regex_match(sChoice, std::regex("[n](?:o)?", std::regex_constants::icase)))
         {
             // Exit loop
             bAdditionalMembers = false;
@@ -221,17 +188,7 @@ void AddMoreUsers(Family &family)
 
 int main()
 {
-	auto family = LoadFromJSON("json.json");
-
-	if (family)
-	{
-		std::cout << "Null";
-	}
-	else
-	{
-		std::cout << "not";
-
-	}
+	SaveToJSON();
 
 	Location locations;
 	std::string sName, sFamilyName, sChoice;
@@ -246,7 +203,7 @@ int main()
 	std::cout << "Please enter the name for the family\n";
 	std::cin >> sFamilyName;
 
-	// Family family(sFamilyName);
+	Family family(sFamilyName);
 
 	std::cout << "Please add a family member\n";
 
@@ -257,29 +214,36 @@ int main()
 	std::cout << "Enter the age \n";
 	iAge = ValidateNumberInput();
 
-	std::shared_ptr<User> user = std::make_shared<User>(sName, iAge);
+	User user(sName, iAge);
     // Add user to the family
-    family->m_clsUsers.push_back(user);
+    family.m_clsUsers.push_back(user);
 	
 	// Check if user wants to add more users to the family
-	AddMoreUsers(*family);
+	AddMoreUsers(&family);
 
-	SaveToJSON(*family);
 	// Select the destination
-
-	std::cout << "select\n\n";
+	std::cout << "Please select the appropriate choice\n\n";
+	bool bChoiceSelectError = false;
 	// TODO Error 
 	do
 	{
-        std::cout << "1: " << "Select your desired destination\n";
-        std::cout << "2: " << "See what activities are available in each location\n";
+		if (!bChoiceSelectError)
+		{
+			std::cout << "1: " << "Select your desired destination\n";
+			std::cout << "2: " << "See what activities are available in each location\n";
 
-		iChoiceSelect = ValidateNumberInput();
+			std::cout << "0: " << "Exit\n";
+
+			iChoiceSelect = ValidateNumberInput();
+		}
 
 		switch (iChoiceSelect)
 		{
+		case 0:
+			bChoiceSelect = false;
+			break;
 		case 1:
-			SelectLocation(locations, *family);
+			SelectLocation(locations, family);
 			break;
 		case 2:
 			ActivitiesInEachLocation(locations);
@@ -287,9 +251,8 @@ int main()
 		default:
 			std::cout << "Please enter the correct option\n";
 			iChoiceSelect = ValidateNumberInput();
-
-			bChoiceSelect = false;
+			bChoiceSelectError = true;
 			break;
 		}
 	} while (bChoiceSelect);
-}
+ }
