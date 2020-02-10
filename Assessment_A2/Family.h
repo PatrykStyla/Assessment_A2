@@ -16,6 +16,7 @@ private:
 protected:
 
 public:
+	Family() {};
 	Family(std::string);
 	~Family();
 	/** The name of the family */

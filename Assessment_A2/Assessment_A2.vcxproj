@@ -152,7 +152,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Admin.cpp" />
-    <ClCompile Include="csvfile.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Family.cpp" />
     <ClCompile Include="Location.cpp" />
@@ -160,7 +159,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Admin.h" />
-    <ClInclude Include="csvfile.h" />
     <ClInclude Include="Family.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="Location.h" />

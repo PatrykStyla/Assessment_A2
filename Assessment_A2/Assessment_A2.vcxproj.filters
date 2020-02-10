@@ -30,9 +30,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="csvfile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="User.h">
@@ -45,9 +42,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Location.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="csvfile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="json.hpp">
