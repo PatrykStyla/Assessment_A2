@@ -10,23 +10,33 @@
 class Family
 {
 private:
-    /* Location */
+    /* Location class */
     std::string m_sLocation;
-
+	/** We will add all the expenses of all users */
+	int m_iTotalCostOfUsers = 0;
+	std::string m_sFamilyName;
+    /** A family will consists of a vector of users each with its own age, name, etc... */
+    std::vector<std::shared_ptr<User>> m_clsUsers;
 protected:
 
 public:
-	Family() {};
+	Family() {  };
 	Family(std::string);
 	~Family();
-	/** The name of the family */
-	std::string m_sFamilyName;
-	/** A family will consists of a vector of users each with its own age, name, etc... */
-	std::vector<std::shared_ptr<User>> m_clsUsers;
-	/** We will add all the expenses of all users */
-	int m_iTotalCostOfUsers;
 
-	void SetUserLocation(std::string sLocation);
+	void SetFamilyLocation(std::string sLocation);
+	std::string GetFamilyLocation();
+
+	void SetFamilyTotalCost(int);
+	int GetFamilyTotalCost();
+
+	void SetFamilyName(std::string);
+	std::string GetFamilyName();
+
+	void SetFamilyUser(std::shared_ptr<User>);
+	std::vector<std::shared_ptr<User>> GetFamilyUsers();
+
+
 private:
 
 };

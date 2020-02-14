@@ -17,3 +17,38 @@ User::~User()
 {
 	std::cout << "User: " << m_sName << " destroyed\n";
 }
+
+void User::SetUserName(std::string sName)
+{
+	m_sName = sName;
+}
+
+std::string User::GetUserName()
+{
+	return m_sName;
+}
+
+void User::SetAge(int iAge)
+{
+	m_iYearsOld = iAge;
+}
+
+int User::GetAge()
+{
+	return m_iYearsOld;
+}
+
+void User::SetTotalUserCost(int iTotalCost)
+{
+	m_iTotalCost = iTotalCost;
+}
+
+int User::GetTotalUserCost()
+{
+	return m_iTotalCost;
+}
+
+bool User::IsChild()
+{
+	return m_iIsconsideredChild;
+}
