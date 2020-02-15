@@ -2,6 +2,7 @@
 
 #include <string>
 #include <iostream>	
+#include <vector>
 
 class User
 {
@@ -14,6 +15,7 @@ private:
     bool m_bIsChild;
     int m_iTotalCost;
 
+	std::vector<std::string> m_sListOfAttractions;
 protected:
 
 public:
@@ -25,6 +27,9 @@ public:
 
 	void SetTotalUserCost(int);
 	int GetTotalUserCost();
+
+	void SetActivity(std::string);
+	std::vector<std::string> GetActivities();
 
 	bool IsChild();
 

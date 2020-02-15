@@ -8,8 +8,6 @@ User::User(std::string sName, int iYearsOld)
 	m_iYearsOld = iYearsOld;
 	// Check if person is a child
 	m_iYearsOld < m_iIsconsideredChild ? true : false;
-
-	// std::cout << "User Contrusted: " << m_sName << "\n";
 }
 
 
@@ -46,6 +44,16 @@ void User::SetTotalUserCost(int iTotalCost)
 int User::GetTotalUserCost()
 {
 	return m_iTotalCost;
+}
+
+void User::SetActivity(std::string sActivity)
+{
+	m_sListOfAttractions.push_back(sActivity);
+}
+
+std::vector<std::string> User::GetActivities()
+{
+	return m_sListOfAttractions;
 }
 
 bool User::IsChild()
