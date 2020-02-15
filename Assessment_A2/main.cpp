@@ -3,6 +3,7 @@
 #include "User.h"
 #include "Family.h"
 #include "json.hpp"
+#include "Helper.h"
 
 #include <fstream>
 #include <memory>
@@ -92,13 +93,10 @@ int ValidateNumberInput()
 
 void SelectLocation(Location& locations, std::unique_ptr<Family>& family)
 {
-    int iChoiceDestination;
-    bool bChoiceDestination = false;
+    int iChoiceDestination, iHowManyAttractions, iAttraction;
+    bool bChoiceDestination = false, bStopAddingActivities = false, bAttraction = false;
 
-    for (int i = 0; i < locations.m_sLocation.size(); i++)
-    {
-        std::cout << i + 1 << ": " << locations.m_sLocation[i] << "\n";
-    }
+    PrintLocations(locations);
     do
     {
         iChoiceDestination = ValidateNumberInput();
@@ -106,15 +104,39 @@ void SelectLocation(Location& locations, std::unique_ptr<Family>& family)
         // remove the offset
         iChoiceDestination = iChoiceDestination - 1;
 
-        if (iChoiceDestination >= 0 && iChoiceDestination < locations.m_sLocation.size())
+        if (iChoiceDestination >= 0 && iChoiceDestination < locations.map_LocationPrice.size())
         {
-
             family->SetFamilyLocation(locations.m_sLocation[iChoiceDestination]);
+            auto users = family->GetFamilyUsers();
 
-            std::cout << "\nattractions available at " << locations.m_sLocation[iChoiceDestination] << "\n\n";
-            for (int i = 0; i < locations.m_sAvaliableActivities[iChoiceDestination].size(); i++)
+            std::cout << "\nChoose an attraction for each user  " << locations.m_sLocation[iChoiceDestination] << "\n\n";
+            PrintAttractions(locations, iChoiceDestination);
+
+            std::cout << "Please add attractions for every user from the available list\n\n";
+            for (auto user : users)
             {
-                std::cout << i + 1 << ": " << locations.m_sAvaliableActivities[iChoiceDestination][i] << "\n";
+                std::cout << "How many attractions do you wish to add for the user: " << user->GetUserName() << "?\n";
+                iHowManyAttractions = ValidateNumberInput();
+                std::cout << "You can stop at any time by pressing 0(zero)\n";
+                for (size_t i = 0; i < iHowManyAttractions; i++)
+                {
+                    do
+                    {
+                        bAttraction = false;
+                        std::cout << "Please enter the attraction " << i + 1 << "\n";
+                        iAttraction = ValidateNumberInput();
+                        iAttraction -= 1;
+                        if (iAttraction >= 0 && iAttraction < locations.map_LocationActivity.at(locations.m_sLocation[iChoiceDestination]).size())
+                        {
+                            user->SetActivity(locations.map_LocationActivity.at(locations.m_sLocation[iChoiceDestination]).at(iAttraction));
+                        }
+                        else
+                        {
+                            // do while bool
+                            bAttraction = true;
+                        }
+                    } while (bAttraction);
+                }
             }
         }
         else { bChoiceDestination = true; }
@@ -124,45 +146,56 @@ void SelectLocation(Location& locations, std::unique_ptr<Family>& family)
 void ActivitiesInEachLocation(Location& locations)
 {
     int iChoice;
-    bool bChoice = true, bOtherLocation = true;
+    bool bChoice = false, bLocation = false, bOtherLocation = false;
     std::string sChoice;
 
     do
     {
-        if (bOtherLocation)
+        if (!bOtherLocation)
         {
             std::cout << "Select the desired activity to see the available locations\n";
         }
-
-        for (int i = 0; i < locations.m_sActivity.size(); i++)
-        {
-            std::cout << i + 1 << ": " << locations.m_sActivity[i] << "\n";
-        }
-
-        iChoice = ValidateNumberInput();
-        std::cout << "\n";
-        // Remove offset
-        iChoice = iChoice - 1;
-
-        for (int i = 0; i < locations.m_sAvailableLocations[iChoice].size(); i++)
-        {
-            std::cout << i + 1 << ": " << locations.m_sAvailableLocations[iChoice][i] << "\n";
-        }
-
-        std::cout << "\nDo you want to check other locations?\n";
-
         do
         {
+            for (int i = 0; i < locations.m_sActivity.size(); i++)
+            {
+                std::cout << i + 1 << ") Activity " << locations.m_sActivity[i] << ", Price per person: " << locations.m_fCostPerPerson[i] << char(156) << "\n";
+            }
+            std::cout << "\n";
+            do
+            {
+                iChoice = ValidateNumberInput();
+                // Remove offset
+                iChoice = iChoice - 1;
+                if (iChoice >= 0 && iChoice < locations.m_sActivity.size())
+                {
+                    for (int i = 0; i < locations.m_sAvailableLocations[iChoice].size(); i++)
+                    {
+                        std::cout << "Location: " << locations.m_sAvailableLocations[iChoice][i]
+                            << ", Price: " << locations.map_LocationPrice[locations.m_sAvailableLocations[iChoice][i]] << char(156) << "\n";
+                    }
+                }
+                else
+                {
+                    std::cout << "Please choose one of the available locations\n";
+                    bLocation = true;
+                }
+            } while (bLocation);
+
+
+            std::cout << "\nDo you want to check other locations?\n";
+
             std::cin >> sChoice;
             std::cout << "\n";
 
             if (std::regex_match(sChoice, std::regex("[y](?:es)?", std::regex_constants::icase)))
             {
-                bOtherLocation = false;
                 bChoice = true;
+                bOtherLocation = true;
             }
             else if (std::regex_match(sChoice, std::regex("[n](?:o)?", std::regex_constants::icase)))
             {
+                // exit the loops
                 bChoice = false;
                 bOtherLocation = false;
             }
