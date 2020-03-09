@@ -5,29 +5,21 @@
 
 void PrintLocations(Location& locations)
 {
-    int i = 0;
-    for (auto location : locations.map_LocationPrice)
+    for (size_t i = 0; i < locations.m_sLocation.size(); i++)
     {
-        std::cout << i + 1 << ") Location: " << location.first 
-                  << ", Price: " << location.second << char(156) << "\n";
-        i++;
+        std::cout << i + 1 << ") Location: " << locations.m_sLocation[i]
+                           << ", Price: " << locations.m_fPrice[i] << char(156) << "\n";
     }
-
-    //for (int i = 0; i < locations.m_sLocation.size(); i++)
-    //{
-    //    std::cout << i + 1 << ": Location: " << locations.m_sLocation[i] << ", Price per person: " << locations.m_fPrice[i] << char(156) << "\n";
-    //}
 }
 
 void PrintAttractions(Location& locations, int iChoiceDestination)
 {
     std::cout << "List of attractions at " << locations.m_sLocation[iChoiceDestination] << "\n";
-    int i = 0;
-    for (auto attraction : locations.map_LocationActivity.at(locations.m_sLocation[iChoiceDestination]))
+
+    for (size_t i = 0; i < locations.m_sAvaliableActivities[iChoiceDestination].size(); i++)
     {
-        std::cout << i + 1 << ")    Attraction: " << attraction
-                  << ", Price per user: " << locations.map_ActivityPrice.at(attraction)
-                  << char(156) << "\n";
-        i++;
+        std::cout << i + 1 << ") Attraction: " << locations.m_sAvaliableActivities[iChoiceDestination][i]
+                           << ", Price per user: " << locations.map_ActivityPrice.at(locations.m_sAvaliableActivities[iChoiceDestination][i])
+                           << char(156) << "\n";
     }
 }

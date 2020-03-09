@@ -69,7 +69,7 @@ std::unique_ptr<Family> LoadFromJSON(std::string sfamilyName)
     }
 }
 
-#pragma endregion Save/Load
+#pragma endregion
 /* Will handle the input of a number, validate it and return the value when its correct*/
 int ValidateNumberInput()
 {
@@ -109,7 +109,7 @@ void SelectLocation(Location& locations, std::unique_ptr<Family>& family)
             family->SetFamilyLocation(locations.m_sLocation[iChoiceDestination]);
             auto users = family->GetFamilyUsers();
 
-            std::cout << "\nChoose an attraction for each user  " << locations.m_sLocation[iChoiceDestination] << "\n\n";
+            std::cout << "\nChoose an attraction for each user " << "\n\n";
             PrintAttractions(locations, iChoiceDestination);
 
             std::cout << "Please add attractions for every user from the available list\n\n";
@@ -371,7 +371,7 @@ std::unique_ptr<Family> LoadFamily(std::string sFamilyName)
             bExists = CheckIfFamilyAlreadyExists(sFamilyName);
             if (bExists)
             {
-                std::cout << "A family with that name already exists";
+                std::cout << "A family with that name already exists.\n";
             }
             else
             {

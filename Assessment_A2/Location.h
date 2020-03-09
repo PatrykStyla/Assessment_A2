@@ -19,6 +19,9 @@ public:
 	/* This lists the available activities based on the location */
     std::vector<std::vector<std::string>> m_sAvaliableActivities;
 
+    // We use maps to match the string to its corresponsing value
+    // maps are dynamically initialized based on the initial values
+    // Not all maps may be used for this program.
 
 	/* location => price */
 	std::map<std::string, float> map_LocationPrice;
