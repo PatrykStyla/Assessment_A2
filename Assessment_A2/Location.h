@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include "json.hpp"
 
 class Location
 {
@@ -37,4 +38,6 @@ public:
 	void InitActivityPriceMap();
 	void InitActivityLocationMap();
 	void InitLocationActivityMap();
+
+    void InitFromJson();
 };
