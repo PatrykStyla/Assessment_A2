@@ -112,35 +112,56 @@ void SelectLocation(Location& locations, std::unique_ptr<Family>& family)
             std::cout << "\nChoose an attraction for each user " << "\n\n";
             PrintAttractions(locations, iChoiceDestination);
 
-            std::cout << "Please add attractions for every user from the available list\n\n";
+            std::cout << "\nPlease add attractions for every user from the available list\n"
+                << "If you dont want to add any attractions press 0(zero)\n\n";
             for (auto user : users)
             {
                 std::cout << "How many attractions do you wish to add for the user: " << user->GetUserName() << "?\n";
-                iHowManyAttractions = ValidateNumberInput();
-                std::cout << "You can stop at any time by pressing 0(zero)\n";
-                for (size_t i = 0; i < iHowManyAttractions; i++)
+                do
                 {
-                    do
+                    iHowManyAttractions = ValidateNumberInput();
+                    // user wants to add x attractions for that user
+                    if (iHowManyAttractions > 0)
                     {
-                        bAttraction = false;
-                        std::cout << "Please enter the attraction " << i + 1 << "\n";
-                        iAttraction = ValidateNumberInput();
-                        iAttraction -= 1;
-                        if (iAttraction >= 0 && iAttraction < locations.map_LocationActivity.at(locations.m_sLocation[iChoiceDestination]).size())
+                        for (size_t i = 0; i < iHowManyAttractions; i++)
                         {
-                            user->SetActivity(locations.map_LocationActivity.at(locations.m_sLocation[iChoiceDestination]).at(iAttraction));
+                            do
+                            {
+                                bAttraction = false;
+                                std::cout << "Please enter the attraction " << i + 1 << "\n";
+                                iAttraction = ValidateNumberInput();
+                                iAttraction -= 1;
+                                if (iAttraction >= 0 && iAttraction < locations.map_LocationActivity.at(locations.m_sLocation[iChoiceDestination]).size())
+                                {
+                                    user->SetActivity(locations.map_LocationActivity.at(locations.m_sLocation[iChoiceDestination]).at(iAttraction));
+                                }
+                                else
+                                {
+                                    // do while bool
+                                    bAttraction = true;
+                                }
+                            } while (bAttraction);
                         }
-                        else
-                        {
-                            // do while bool
-                            bAttraction = true;
-                        }
-                    } while (bAttraction);
-                }
+                    }
+                    else if (iHowManyAttractions == 0)
+                    {
+                        // User does not want to add any attractions. Continue with the next user
+                    }
+                    else
+                    {
+                        std::cout << "Please enter a possitive number\n";
+                    }
+                } while (iHowManyAttractions < 0);
             }
+            // looped through the users. Exit
+            bChoiceDestination = false;
         }
-        else { bChoiceDestination = true; }
-    } while (iChoiceDestination >= 0 || bChoiceDestination);
+        else 
+        { 
+            bChoiceDestination = true; 
+            std::cout << "Please enter a possitive number\n";
+        }
+    } while (bChoiceDestination);
 }
 
 void ActivitiesInEachLocation(Location& locations)
@@ -458,17 +479,21 @@ void Login()
 
 std::unique_ptr<Family> StartupMenu(bool bExit)
 {
-    bool bMenu = true, bExists;
+    bool bMenu = true, bExists, bOnlyOnce = true;
     int iChoice = 0;
     std::string sFamilyName;
     std::unique_ptr<Family> family;
 
     bExit = true;
 
-    do
+    if (bOnlyOnce)
     {
         std::cout << "Welcome to the program. Select the appropriate option.\n";
+        bOnlyOnce = false;
+    }
 
+    do
+    {
         std::cout << "1) Load a family\n";
         std::cout << "2) Create a new family\n";
         std::cout << "3) Login\n";
@@ -532,11 +557,12 @@ int main()
         {
             Location locations;
             int iChoiceSelect;
-            bool bChoiceSelect = true;
+            bool bChoiceSelect = false;
 
             std::cout << "select\n\n";
             do
             {
+                bChoiceSelect = false;
                 std::cout << "1: " << "Select your desired destination\n";
                 std::cout << "2: " << "See what activities are available in each location\n";
 
@@ -554,10 +580,9 @@ int main()
                     ActivitiesInEachLocation(locations);
                     break;
                 default:
-                    std::cout << "Please enter the correct option\n";
-                    iChoiceSelect = ValidateNumberInput();
+                    std::cout << "Please enter the correct option\n\n";
 
-                    bChoiceSelect = false;
+                    bChoiceSelect = true;
                     break;
                 }
             } while (bChoiceSelect);
