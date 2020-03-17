@@ -9,28 +9,6 @@ Location::Location()
     // This json simulates a database
     InitFromJson();
 
-	// Initialize the values
-	m_sLocation =			{ "Florida", "Paris", "Milan", "Tokyo" };
-	m_fPrice =				{ 1300.0f, 600.0f, 950.0f, 1800.0f };
-	m_fMinimumTravellers =	{ 4, 2, 2, 4 };
-
-	m_sActivity =			{"Theme Park", "Guided Tours", "Sky Diving"};
-	m_fCostPerPerson =		{ 80.0f, 35.0f, 110.0f };
-	m_sAvailableLocations =	
-    { 
-		{"Florida", "Paris" ,"Tokyo"},
-		{"Paris", "Milan" ,"Tokyo"},
-		{"Florida"}
-	};
-
-	m_sAvaliableActivities = 
-	{ 
-		{"Theme Park", "Sky Diving"},
-		{"Theme Park", "Guided Tours"},
-		{"Guided Tours"},
-        {"Theme Park", "Guided Tours" }
-	};
-
     InitLocationPriceMap();
     InitActivityPriceMap();
     InitActivityLocationMap();
@@ -39,23 +17,66 @@ Location::Location()
 
 void Location::InitFromJson()
 {
-    json j;
-    j["Locations"]["location"] = { "Florida", "Paris", "Milan", "Tokyo" };
-    j["Locations"]["price"] = { 1300.0f, 600.0f, 950.0f, 1800.0f };
-    j["Locations"]["minimumTravellers"] = { 4, 2, 2, 4 };
-
-    j["Activities"]["activity"] = { "Theme Park", "Guided Tours", "Sky Diving" };
-    j["Activities"]["price"] = { 80.0f, 35.0f, 110.0f };
-    j["Activities"]["AvalailableLocations"] =
+    // Try to read a json file
+    std::ifstream i("Locations.json");
+    
+    if (i)
     {
-        {"Florida", "Paris" ,"Tokyo"},
-        {"Paris", "Milan" ,"Tokyo"},
-        {"Florida"}
-    };
+        // file exists. Load the data from the file
+        LoadFromJson();
+    }
+    else 
+    {
+        // The file was not pressent for some reason. 
+        // Recreate it using the default values
+        json j;
+        j["Locations"]["location"] = { "Florida", "Paris", "Milan", "Tokyo" };
+        j["Locations"]["price"] = { 1300.0f, 600.0f, 950.0f, 1800.0f };
+        j["Locations"]["minimumTravellers"] = { 4, 2, 2, 4 };
 
-    std::ofstream Locations;
-    Locations.open("Locations.json");
-    Locations << j.dump();
+        j["Activities"]["activity"] = { "Theme Park", "Guided Tours", "Sky Diving" };
+        j["Activities"]["price"] = { 80.0f, 35.0f, 110.0f };
+        j["Activities"]["AvalailableLocations"] =
+        {
+            {"Florida", "Paris" ,"Tokyo"},
+            {"Paris", "Milan" ,"Tokyo"},
+            {"Florida"}
+        };
+        j["Activities"]["m_sAvaliableActivities"] =
+        {
+            {"Theme Park", "Sky Diving"},
+            {"Theme Park", "Guided Tours"},
+            {"Guided Tours"},
+            {"Theme Park", "Guided Tours" }
+        };
+
+        std::ofstream Locations;
+        Locations.open("Locations.json");
+        Locations << j.dump();
+        Locations.close();
+        // Load the data into memory
+        LoadFromJson();
+    }
+}
+
+void Location::LoadFromJson()
+{
+    json j;
+
+    std::ifstream Locations("Locations.json");
+    // Load the json into the json class
+    Locations >> j;
+
+    // Load the data to memory
+    m_sLocation = j["Locations"]["location"].get<std::vector<std::string>>();
+    m_fPrice = j["Locations"]["price"].get<std::vector<float>>();
+    m_fMinimumTravellers = j["Locations"]["minimumTravellers"].get<std::vector<int>>();
+
+    m_sActivity = j["Activities"]["activity"].get<std::vector<std::string>>();
+    m_fCostPerPerson = j["Activities"]["price"].get<std::vector<float>>();
+    m_sAvailableLocations = j["Activities"]["AvalailableLocations"].get<std::vector<std::vector<std::string>>>();
+    m_sAvaliableActivities = j["Activities"]["m_sAvaliableActivities"].get<std::vector<std::vector<std::string>>>();
+
     Locations.close();
 }
 

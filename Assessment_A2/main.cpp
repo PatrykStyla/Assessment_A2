@@ -4,6 +4,7 @@
 #include "Family.h"
 #include "json.hpp"
 #include "Helper.h"
+#include "Admin.h"
 
 #include <fstream>
 #include <memory>
@@ -14,9 +15,8 @@ using json = nlohmann::json;
 void SaveToJSON(Family& family)
 {
 
-    json j;
-
     // Create the object and add the c++ obj properties
+    json j;
 
 
     j["Family"]["name"] = family.GetFamilyName();
@@ -28,7 +28,6 @@ void SaveToJSON(Family& family)
         // Add the properties to the family object
         j["Family"]["user"].emplace_back() = { {"name", user->GetUserName()}, {"age", user->GetAge()}, {"totalCost", 10000} };
     }
-    // This will ad another object at the end
 
     std::ofstream myfile;
     myfile.open(family.GetFamilyName() + ".json");
@@ -57,14 +56,14 @@ std::unique_ptr<Family> LoadFromJSON(std::string sfamilyName)
             user->SetTotalUserCost(users["totalCost"]);
             family->SetFamilyUser(user);
         }
-
+        i.close();
         return family;
     }
     else
     {
         // No such file was found
         std::cout << "A family with the name " << sfamilyName << " does not exist.\n";
-
+        i.close();
         return nullptr;
     }
 }
@@ -474,7 +473,9 @@ std::unique_ptr<Family> FamilyAlreadyExists(std::string sFamilyName)
 
 void Login()
 {
-    // TODO admin login
+    Admin admin;
+    admin
+
 }
 
 std::unique_ptr<Family> StartupMenu(bool bExit)

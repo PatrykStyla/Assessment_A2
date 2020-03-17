@@ -40,4 +40,5 @@ public:
 	void InitLocationActivityMap();
 
     void InitFromJson();
+    void LoadFromJson();
 };
