@@ -118,7 +118,7 @@ void Location::SaveToJson()
     {
         json j;
 
-        for (auto a : Locations)
+        for (auto& a : Locations)
         {
             j["Locations"]["location"] += a.m_sLocation;
             j["Locations"]["price"] += a.m_fPrice;

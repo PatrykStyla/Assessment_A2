@@ -18,6 +18,9 @@ private:
     bool m_bIsLoggedIn = false;
     int iWrongCredentialCounter = 0;
 
+    static float m_fVAT; // + 20%
+    static float m_fDiscount; // - 10%
+
     Location* m_locations;
 private:
     void SaveToJSON();
@@ -43,6 +46,13 @@ private:
 
     std::unique_ptr<Family> SelectFamily();
 public:
+
+    static float GetVat() { return m_fVAT; }
+    void SetVat(float);
+
+    static float GetDiscout() { return m_fDiscount; }
+    void SetDiscount(float);
+
     Admin(Location&);
     bool Login(std::string, std::string);
     bool IsLoggedIn();

@@ -10,6 +10,8 @@ Admin::Admin(Location& locations)
     // Try to load admin credentials if user has logged in at least once
     LoadFromJSON();
 }
+float Admin::m_fVAT;
+float Admin::m_fDiscount;
 
 void Admin::SaveToJSON()
 {
@@ -17,6 +19,9 @@ void Admin::SaveToJSON()
 
     j["Admin"]["sUserName"] = m_sUsername;
     j["Admin"]["sPassword"] = m_sPassword;
+
+    j["Admin"]["VAT"] = m_fVAT;
+    j["Admin"]["Discount"] = m_fDiscount;
 
     std::ofstream AdminFile;
     AdminFile.open("admin.json");
@@ -36,7 +41,11 @@ void Admin::LoadFromJSON()
 
         m_sUsername = j["Admin"]["sUserName"].get<std::string>();
         m_sPassword = j["Admin"]["sPassword"].get<std::string>();
+
+        m_fVAT = j["Admin"]["VAT"].get<float>();
+        m_fDiscount = j["Admin"]["Discount"].get<float>();
     }
+    i.close();
 }
 
 bool Admin::Login(std::string sUsername, std::string sPassword)
@@ -69,6 +78,16 @@ bool Admin::Login(std::string sUsername, std::string sPassword)
         iWrongCredentialCounter++;
         return m_bIsLoggedIn;
     }
+}
+
+void Admin::SetVat(float fVAT)
+{
+    m_fVAT = fVAT;
+}
+
+void Admin::SetDiscount(float fDiscount)
+{
+    m_fDiscount = fDiscount;
 }
 
 bool Admin::IsLoggedIn()
@@ -447,7 +466,7 @@ void Admin::EditFamily()
         std::cout << "1) Edit family name.\n"
             << "2) Edit the users.\n"
             << "3) Edit Location.\n"
-            << "4) Save all changes.\n"
+            << "5) Save all changes.\n"
             << "0) Exit\n";
 
         iChoice = ValidateNumberInput();
@@ -483,7 +502,7 @@ void Admin::EditFamily()
 
                 family->SetFamilyLocation(location.GetLocations().at(iLocationIndex).m_sLocation);
                 break;
-            case 4:
+            case 5:
                  family->SaveToJSON(sOldFamilyName);
                 break;
             default:
@@ -659,8 +678,9 @@ std::unique_ptr<Family> Admin::SelectFamily()
 // Default Menu for admin
 void Admin::AdminMenu()
 {
-    bool bExit = true;
-    int iChoice;
+    int iChoice, iIndex;
+    bool bExit = true, bMisc = true;
+    float fInput, fFormatedOutput;
 
     std::cout << "Please choose the appropriate option.\n";
     do
@@ -668,10 +688,11 @@ void Admin::AdminMenu()
         std::cout << "1) Edit locations.\n"
             << "2) Edit activities.\n"
             << "3) Edit users.\n"
-            << "4) Save all changes.\n"
-            << "5) Edit credentials.\n"
-            << "6) Logout.\n"
-            << "7) Return to main menu.\n";
+            << "4) Misc settings\n"
+            << "5) Edit credentials\n"
+            << "6) Save all changes.\n"
+            << "7) Logout.\n"
+            << "8) Return to main menu.\n";
 
         iChoice = ValidateNumberInput();
         switch (iChoice)
@@ -686,16 +707,70 @@ void Admin::AdminMenu()
             EditUsers();
             break;
         case 4:
-            SaveChanges();
+            do
+            {
+                std::cout << "You can change:\n"
+                    << "1) VAT.\n"
+                    << "2) Discount ammount.\n"
+                    << "0) Exit.\n";
+                iIndex = ValidateNumberInput();
+
+                switch (iIndex)
+                {
+                case 0:
+                    bMisc = false;
+                    break;
+                case 1:
+                    // Formats the 1.2 to 20%
+                    fFormatedOutput = GetVat() > 1 ? (GetVat() - 1) * 100 : (GetVat() + 1) * 100;
+                    std::cout << "Please enter the new ammount in %." << "Currently it is at: " << fFormatedOutput << "%\n";
+                    do
+                    {
+                        fInput = ValidateFloatInput();
+                        if (fInput < 0)
+                        {
+                            std::cout << "Please enter a positive number.\n";
+                        }
+                    } while (fInput < 0);
+                    // format 20(%) to 1.2
+                    fInput = (fInput / 100) + 1;
+
+                    SetVat(fInput);
+                    break;
+                case 2:
+                    // Formats 0.9 to 10% 
+                    fFormatedOutput = GetVat() > 1 ? abs((GetDiscout() - 1) * 100) : abs((GetDiscout() + 1) * 100);
+                    std::cout << "Please enter the new ammount in %." << "Currently it is at: " << fFormatedOutput << "%\n";
+                    do 
+                    {
+                        fInput = ValidateFloatInput();
+                        if (fInput < 0)
+                        {
+                            std::cout << "Please enter a positive number.\n";
+                        }
+                    } while (fInput < 0);
+
+                    // format 10(%) to 0.9
+                    fInput = abs(fInput / 100 - 1);
+
+                    SetDiscount(fInput);
+                    break;
+                default:
+                    break;
+                }
+            } while (bMisc);
             break;
         case 5:
             ChangeCredentials();
             break;
         case 6:
+            SaveChanges();
+            break;
+        case 7:
             bExit = false;
             m_bIsLoggedIn = false;
             break;
-        case 7:
+        case 8:
             bExit = false;
             break;
         default:

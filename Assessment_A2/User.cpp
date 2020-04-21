@@ -2,18 +2,26 @@
 
 User::User(std::string sName, int iYearsOld)
 {
-	m_iIsconsideredChild = 13;
-
 	m_sName = sName;
 	m_iYearsOld = iYearsOld;
 	// Check if person is a child
-	m_iYearsOld < m_iIsconsideredChild ? true : false;
+	m_iYearsOld < m_iIsConsideredChild ? true : false;
 }
 
 
 User::~User()
 {
 	std::cout << "User: " << m_sName << " destroyed\n";
+}
+
+int User::GetIsConsideredChild()
+{
+	return m_iIsConsideredChild;
+}
+
+int User::GetIsConsideredAdult()
+{
+	return m_iIsConsideredAdult;
 }
 
 void User::SetUserName(std::string sName)
@@ -36,27 +44,31 @@ int User::GetAge()
 	return m_iYearsOld;
 }
 
-void User::SetTotalUserCost(int iTotalCost)
+void User::SetTotalUserCost(float iTotalCost)
 {
-	m_iTotalCost = iTotalCost;
+	m_iTotalCost += iTotalCost;
 }
 
-int User::GetTotalUserCost()
+float User::GetTotalUserCost()
 {
 	return m_iTotalCost;
 }
 
-void User::SetActivity(std::string sActivity)
+void User::SetActivity(Location::InvividualActivity& sActivity)
 {
 	m_sListOfAttractions.push_back(sActivity);
 }
 
-std::vector<std::string> User::GetActivities()
+std::vector<Location::InvividualActivity> User::GetActivities()
 {
 	return m_sListOfAttractions;
 }
 
+void User::RemoveActivity(int iIndex)
+{
+
+}
 bool User::IsChild()
 {
-	return m_iIsconsideredChild;
+	return m_iIsConsideredChild;
 }

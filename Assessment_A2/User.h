@@ -3,33 +3,38 @@
 #include <string>
 #include <iostream>	
 #include <vector>
+#include "Location.h"
 
 class User
 {
 private:
 	/* The age under we will consider a person to be a child; */
-	int m_iIsconsideredChild;
+	static const int m_iIsConsideredChild = 9;
+	static const int m_iIsConsideredAdult = 18;
 	
     std::string m_sName;
     int m_iYearsOld;
     bool m_bIsChild;
-    int m_iTotalCost;
+    float m_iTotalCost = 0;
 
-	std::vector<std::string> m_sListOfAttractions;
-protected:
-
+	std::vector<Location::InvividualActivity> m_sListOfAttractions;
 public:
+	static int GetIsConsideredChild();
+	static int GetIsConsideredAdult();
+
+
 	void SetUserName(std::string);
 	std::string GetUserName();
 
 	void SetAge(int);
 	int GetAge();
 
-	void SetTotalUserCost(int);
-	int GetTotalUserCost();
+	void SetTotalUserCost(float);
+	float GetTotalUserCost();
 
-	void SetActivity(std::string);
-	std::vector<std::string> GetActivities();
+	void SetActivity(Location::InvividualActivity&);
+	std::vector<Location::InvividualActivity> GetActivities();
+	void RemoveActivity(int);
 
 	bool IsChild();
 

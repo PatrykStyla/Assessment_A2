@@ -2,6 +2,7 @@
 #include "json.hpp"
 #include <fstream>
 #include <memory>
+#include "Helper.h"
 
 Family::Family(std::string FamilyName)
 {
@@ -76,6 +77,7 @@ std::unique_ptr<Family> Family::LoadFromJSON(std::string& sFamilyName)
         // Create the family object we will put the json data here
         std::unique_ptr<Family> family = std::make_unique<Family>(sFamilyName);
         family->SetFamilyLocation(j["Family"]["location"]);
+        family->SetFamilyTotalCost(j["Family"]["totalCost"]);
         // Load the data from the json
         for (const auto& users : j["Family"]["user"])
         {
@@ -144,8 +146,6 @@ void Family::SaveToJSON(std::string sOldName)
     std::ofstream myfile("jsons/" + GetFamilyName() + ".json");
     myfile << j.dump();
     myfile.close();
-
-    std::cout << "Done.\n";
 }
 
 std::unique_ptr<Family> Family::CreateFamily(std::string& sFamilyName)
@@ -178,7 +178,7 @@ std::unique_ptr<Family> Family::CreateFamily(std::string& sFamilyName)
         do
         {
             bExit = false;
-            if (family->m_iAdultCounter < 0)
+            if (family->m_iAdultCounter < 0) // FIXXXXXXXXXXXXXXXXXX
             {
                 std::cout << "There must be at least 1 adult present(" << family->m_iAdultCounter << "+) in order to book the trip.\n"
                     << "you can either.\n"
@@ -208,17 +208,33 @@ std::unique_ptr<Family> Family::CreateFamily(std::string& sFamilyName)
     return family;
 }
 
+int Family::GetAdultCounter()
+{
+    return m_iAdultCounter;
+}
+
+int Family::GetChildCounter()
+{
+    return m_iChildCounter;
+}
+
+int Family::GetUndefinedCounter()
+{
+    return m_iUndefinedCounter;
+}
+
 void Family::PrintListOfUsers()
 {
     const auto& Users = GetFamilyUsers();
     for (size_t i = 0; i < Users.size(); i++)
     {
-        std::cout << i + 1 << ") Name: " << Users.at(i)->GetUserName()
+        std::cout << i + 1 << ") Name of user: " << Users.at(i)->GetUserName()
             << " Age: " << Users.at(i)->GetAge()
-            << " Total Cost: " << Users.at(i)->GetTotalUserCost() << ".\n";
+            << " Total Cost: " << char(156) << Users.at(i)->GetTotalUserCost() << ".\n";
+        std::cout << "   Activities:\n";
         for (size_t ii = 0; ii < Users.at(i)->GetActivities().size(); ii++)
         {
-            std::cout << "   " << ii + 1 << ") Activity: " << Users.at(i)->GetActivities().at(ii).m_sActivity << "\n";
+            std::cout << "    " << ii + 1 << ") Activity: " << Users.at(i)->GetActivities().at(ii).m_sActivity << "\n";
         }
     }
     std::cout << "\n";
@@ -235,7 +251,7 @@ std::unique_ptr<Family> Family::LoadFamily(std::string& sFamilyName)
     {
         // TODO print out the family and user for a final confirmation before proceeding to choose the location
         std::cout << "Do you want to load this family with the following details?\n";
-        std::cout << "Location: " << family->GetFamilyLocation() << " Total Cost: " << family->GetFamilyTotalCost() <<  "\n";
+        std::cout << "Location: " << family->GetFamilyLocation() << " Total Cost: " << char(156) << family->GetFamilyTotalCost() <<  "\n";
         family->PrintListOfUsers();
 
         do
@@ -507,7 +523,12 @@ void Family::EditActivities(int iIndex)
         GetUsers().at(iIndex)->SetActivity(*location.GetActivities().at(iIndexActivity));
         break;
     case 2:
-        GetUsers().at(iIndex)->RemoveActivity();
+        PrintListOfUsers();
+        // Index User
+        iIndexActivity = ValidateNumberInput();
+        iIndexActivity--;
+
+        GetUsers().at(iIndex)->RemoveActivity(iIndexActivity);
         break;
     default:
         std::cout << "Please choose a valid option.\n";

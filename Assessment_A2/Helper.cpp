@@ -34,7 +34,7 @@ void PrintDetailsForLocation(Location& locations, int iChoiceDestination)
     std::cout << "\n";
 }
 
-void PrintAttractions (Location& locations, int iChoiceDestination)
+void PrintAttractions(Location& locations, int iChoiceDestination)
 {
     std::cout << "List of attractions at " << locations.GetLocations().at(iChoiceDestination).m_sLocation << "\n\n";
 
@@ -63,7 +63,7 @@ void PrintListFamilies()
     std::string path = "jsons/";
     std::string sToRemove[3] = { "\"", "jsons/", ".json" };
     int i = 0;
-    for (auto entry : std::filesystem::directory_iterator(path))
+    for (auto& entry : std::filesystem::directory_iterator(path))
     {
         // loop 3 times to remove "", jsons/ & .json
         auto a = entry.path().string();
@@ -178,5 +178,15 @@ void ReplaceStringInPlace(std::string& subject, const std::string& search, const
     while ((pos = subject.find(search, pos)) != std::string::npos) {
         subject.replace(pos, search.length(), replace);
         pos += replace.length();
+    }
+}
+
+void PrintActivitiesForUser(Family* family, int iIndex)
+{
+    const auto& activities = family->GetUsers().at(iIndex)->GetActivities();
+    for (size_t i = 0; i < family->GetUsers().at(iIndex)->GetActivities().size(); i++)
+    {
+        std::cout << i + 1 << ") Activity: " << activities.at(i).m_sActivity
+            << " Price: " << char(156) << activities.at(i).m_fCostPerPerson << ".\n";
     }
 }

@@ -4,7 +4,6 @@
 #include <string>
 #include "User.h"
 #include "Location.h"
-#include "Helper.h"
 #include <iostream>
 #include <cstdio>
 
@@ -61,6 +60,11 @@ public:
 	void RemoveFromJson(std::string&);
 	static std::unique_ptr<Family> LoadFromJSON(std::string&);
 	static std::unique_ptr<Family> CreateFamily(std::string&);
+
+	int GetAdultCounter();
+	int GetChildCounter();
+	int GetUndefinedCounter();
+
 private:
 };
 

@@ -1,6 +1,8 @@
 #pragma once
 #include "Location.h"
+#include "Family.h"
 #include <regex>
+
 
 // Prints all locations & price
 void PrintLocations(Location&);
@@ -26,3 +28,5 @@ void AnotherLocation(bool&);
 void GetStringInput(std::string&);
 // https://stackoverflow.com/questions/5878775/how-to-find-and-replace-string
 void ReplaceStringInPlace(std::string& subject, const std::string& search, const std::string& replace);
+
+void PrintActivitiesForUser(Family*, int);
