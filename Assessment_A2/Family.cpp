@@ -11,7 +11,9 @@ Family::Family(std::string FamilyName)
 
 Family::~Family()
 {
-	std::cout << "Family: " << m_sFamilyName << " destroyed\n";
+#if DebugPrint
+    std::cout << "Family: " << m_sFamilyName << " destroyed\n";
+#endif
 }
 
 void Family::SetFamilyLocation(std::string sLocation)
@@ -84,6 +86,7 @@ std::unique_ptr<Family> Family::LoadFromJSON(std::string& sFamilyName)
             std::shared_ptr<User> user = std::make_shared<User>(users["name"], users["age"]);
             user->SetTotalUserCost(users["totalCost"].get<float>());
             family->SetFamilyUser(user);
+            family->ValidateAge(user->GetAge());
 
             if (users.contains("activities"))
             {
@@ -134,8 +137,6 @@ void Family::SaveToJSON(std::string sOldName)
         i++;
     }
 
-
-
     // Optional parameter is present
     if (sOldName != "")
     {
@@ -178,9 +179,9 @@ std::unique_ptr<Family> Family::CreateFamily(std::string& sFamilyName)
         do
         {
             bExit = false;
-            if (family->m_iAdultCounter < 0) // FIXXXXXXXXXXXXXXXXXX
+            if (family->m_iAdultCounter == 0)
             {
-                std::cout << "There must be at least 1 adult present(" << family->m_iAdultCounter << "+) in order to book the trip.\n"
+                std::cout << "There must be at least 1 adult present(" << User::GetIsConsideredAdult() << "+) in order to book the trip.\n"
                     << "you can either.\n"
                     << "1) Add an adult user.\n"
                     << "2) Edit an existing user.\n";
@@ -201,7 +202,7 @@ std::unique_ptr<Family> Family::CreateFamily(std::string& sFamilyName)
                 }
             }
         } while (bExit);
-    } while (family->m_iAdultCounter < 0);
+    } while (family->m_iAdultCounter == 0);
     // Save the family with the family name provided
     family->SaveToJSON();
 
@@ -405,29 +406,31 @@ void Family::ValidateAge(int iAge, int iOldAge)
 {
     if (iOldAge > 0)
     { // When updating the age get the old age and delete the corresponding counter
-        if (iAge > User::GetIsConsideredAdult())
+        if (iOldAge >= User::GetIsConsideredAdult())
         {
             m_iAdultCounter--;
-            return;
         }
-        if (iAge < User::GetIsConsideredChild())
+        else if (iOldAge <= User::GetIsConsideredChild())
         {
             m_iChildCounter--;
-            return;
         }
-        m_iUndefinedCounter--;
+        else
+        {
+            m_iUndefinedCounter--;
+        }
     }
-    if (iAge > User::GetIsConsideredAdult())
+    if (iAge >= User::GetIsConsideredAdult())
     {
         m_iAdultCounter++;
-        return;
     }
-    if (iAge < User::GetIsConsideredChild())
+    else if (iAge <= User::GetIsConsideredChild())
     {
         m_iChildCounter++;
-        return;
     }
-    m_iUndefinedCounter++;
+    else
+    {
+        m_iUndefinedCounter++;
+    }
 }
 
 void Family::DeleteFamily()
@@ -561,7 +564,7 @@ void Family::AddMoreUsers()
             iAge = ValidateNumberInput();
 
             std::shared_ptr<User> user = std::make_shared<User>(sName, iAge);
-
+            ValidateAge(iAge);
             // Add user to the family
             SetFamilyUser(user);
 

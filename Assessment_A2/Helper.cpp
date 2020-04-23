@@ -14,6 +14,24 @@ void PrintLocations(Location& locations)
     std::cout << "\n";
 }
 
+void PrintLocationsAtAttraction(Location& locations, int iAtractionIndex)
+{
+    std::cout << "Locations that have " << locations.GetActivities().at(iAtractionIndex)->m_sActivity << ".\n";
+
+    for (size_t i = 0; i < locations.GetLocations().size(); i++)
+    {
+        for (size_t ii = 0; ii < locations.GetLocations().at(i).Activities.size(); ii++)
+        {
+            if (locations.GetLocations().at(i).Activities.at(ii)->m_sActivity == locations.GetActivities().at(iAtractionIndex)->m_sActivity)
+            {
+                std::cout << i + 1 << ") " << locations.GetLocations().at(i).m_sLocation << "\n";
+            }
+        }
+    }
+
+    std::cout << "\n";
+}
+
 void PrintLocationsDetailed(Location& locations)
 {
     for (size_t i = 0; i < locations.GetLocations().size(); i++)
@@ -41,7 +59,7 @@ void PrintAttractions(Location& locations, int iChoiceDestination)
     for (size_t i = 0; i < locations.GetLocations().at(iChoiceDestination).Activities.size(); i++)
     {
         std::cout << i + 1 << ") Attraction: " << locations.GetLocations().at(iChoiceDestination).Activities.at(i)->m_sActivity
-            << ", Price per user: " << char(156) << locations.GetLocations().at(iChoiceDestination).Activities.at(i)->m_fCostPerPerson << "\n";
+            << ", Price per user: " << char(156) << locations.GetLocations().at(iChoiceDestination).Activities.at(i)->m_fCostPerPerson << ".\n";
     }
     std::cout << "\n";
 }

@@ -3,9 +3,11 @@
 #include "Family.h"
 #include <regex>
 
+#define DebugPrint 0
 
 // Prints all locations & price
 void PrintLocations(Location&);
+void PrintLocationsAtAttraction(Location&, int);
 // Prints all locations & price & min travelers
 void PrintLocationsDetailed(Location&);
 // Print details for an individual location

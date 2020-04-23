@@ -1,4 +1,5 @@
 #include "User.h"
+#include "Helper.h"
 
 User::User(std::string sName, int iYearsOld)
 {
@@ -11,7 +12,9 @@ User::User(std::string sName, int iYearsOld)
 
 User::~User()
 {
-	std::cout << "User: " << m_sName << " destroyed\n";
+#if DebugPrint
+    std::cout << "User: " << m_sName << " destroyed\n";
+#endif
 }
 
 int User::GetIsConsideredChild()

@@ -4,12 +4,12 @@ void BookTrip(Family* family)
 {
     int iChoice;
     float fPrice = family->GetFamilyTotalCost(), fFormatedOutput;
-    if (family->GetAdultCounter() > 2 && family->GetChildCounter() > 2)
+    if (family->GetAdultCounter() >= 2 && family->GetChildCounter() >= 2)
     {
         // at least 2 adults and children. Apply discount
         fPrice *= Admin::GetVat() * Admin::GetDiscout();
         fFormatedOutput = Admin::GetVat() > 1 ? abs((Admin::GetDiscout() - 1) * 100) : abs((Admin::GetDiscout() + 1) * 100);
-        std::cout << "Since there are at least 2 adults and children a " << Admin::GetDiscout() << " % has been applied.\n";
+        std::cout << "Since there are at least 2 adults and children a " << fFormatedOutput << "% has been applied.\n";
     }
     else
     {
@@ -24,41 +24,11 @@ void BookTrip(Family* family)
     {
     case 1:
         std::cout << "Your purchase has been successful.\n";
+        break;
     default:
         std::cout << "Please choose the appropriate option.\n";
         break;
     }
-}
-
-void Checkout(Family* family)
-{
-    int iChoice;
-    bool bExit = true;
-    std::cout << "Below are all the details you have selected.\n";
-    std::cout << "Location: " << family->GetFamilyLocation() << " Total Cost: " << char(156) << family->GetFamilyTotalCost() << "\n";
-    family->PrintListOfUsers();
-    std::cout << "\nNOTE: The prices above exclude any VAT or other taxes.\n";
-    do
-    {
-        std::cout << "1) If you want to change anything. You will redirected to the previous menu.\n"
-            << "2) Book the trip.\n";
-        iChoice = ValidateNumberInput();
-
-        switch (iChoice)
-        {
-        case 1:
-            bExit = false;
-            break;
-        case 2:
-            BookTrip(family);
-            // EXIT
-            bExit = false;
-            break;
-        default:
-            std::cout << "Please enter a valid option.\n";
-            break;
-        }
-    } while (bExit);
 }
 
 // Slightly modified version of the Admin::EditFamily()
@@ -119,6 +89,41 @@ void EditFamily(Family* family)
     } while (bExit);
 }
 
+
+void Checkout(Family* family)
+{
+    int iChoice;
+    bool bExit = true;
+    std::cout << "Below are all the details you have selected.\n";
+    std::cout << "Location: " << family->GetFamilyLocation() << " Total Cost: " << char(156) << family->GetFamilyTotalCost() << "\n";
+    family->PrintListOfUsers();
+    std::cout << "\nNOTE: The prices above exclude any VAT or other taxes.\n";
+    do
+    {
+        std::cout << "1) If you want to change anything\n"
+            << "2) Book the trip.\n"
+            << "0) Exit. Your family is saved.\n";
+        iChoice = ValidateNumberInput();
+
+        switch (iChoice)
+        {
+        case 0:
+            bExit = false;
+        case 1:
+            EditFamily(family);
+            break;
+        case 2:
+            BookTrip(family);
+            // EXIT
+            return;
+            break;
+        default:
+            std::cout << "Please enter a valid option.\n";
+            break;
+        }
+    } while (bExit);
+}
+
 void AfterSelectionMenu(Family* family)
 {
     int iChoice;
@@ -142,7 +147,7 @@ void AfterSelectionMenu(Family* family)
             break;
         case 2:
             Checkout(family);
-            bExit = false;
+            return;
             break;
         default:
             std::cout << "Please enter a valid option.\n";
@@ -154,7 +159,7 @@ void AfterSelectionMenu(Family* family)
 void SelectLocation(Location& locations, std::unique_ptr<Family>& family)
 {
     int iChoiceDestination, iHowManyAttractions, iAttraction;
-    bool bChoiceDestination = true, bAttraction = false;
+    bool bChoiceDestination = true, bAttraction = false, bExit = true, bMin = true;
 
     PrintLocationsDetailed(locations);
     do
@@ -165,6 +170,39 @@ void SelectLocation(Location& locations, std::unique_ptr<Family>& family)
 
         if (iChoiceDestination >= 0 && iChoiceDestination < locations.GetLocations().size())
         {
+            do
+            {
+                // Check min travelers
+                if (( family->GetAdultCounter() + family->GetChildCounter() + family->GetUndefinedCounter() ) < locations.GetLocations().at(iChoiceDestination).m_iMinimumTravellers)
+                {
+                    int iChoice;
+                    std::cout << "You need at least " << locations.GetLocations().at(iChoiceDestination).m_iMinimumTravellers << " people to travel to this location.\n";
+                    std::cout << "1) Edit the family.\n"
+                        << "2) Choose another location.\n"
+                        << "3) Go back to the main menu";
+
+                    iChoice = ValidateNumberInput();
+                    switch (iChoice)
+                    {
+                    case 1:
+                        EditFamily(family.get());
+                        break;
+                    case 2:
+                        SelectLocation(locations, family);
+                        break;
+                    case 3:
+                        return;
+                        break;
+                    default:
+                        std::cout << "Please select a valid option.\n";
+                        break;
+                    }
+                }
+                else
+                {
+                    bExit = false;
+                }
+            } while (family->GetAdultCounter() + family->GetChildCounter() + family->GetUndefinedCounter() > locations.GetLocations().at(iChoiceDestination).m_iMinimumTravellers || bExit);
             family->SetFamilyLocation(locations.GetLocations().at(iChoiceDestination).m_sLocation);
             // Set LOCATION price for every user.
             for (size_t i = 0; i < family->GetUsers().size(); i++)
@@ -258,7 +296,7 @@ void ActivitiesInEachLocation(Location& locations)
                 iChoice = iChoice - 1;
                 if (iChoice >= 0 && iChoice < locations.GetActivities().size())
                 {
-                    PrintLocationsDetailed(locations);
+                    PrintLocationsAtAttraction(locations, iChoice);
                 }
                 else
                 {
@@ -350,8 +388,8 @@ void FamilyMenu(std::unique_ptr<Family>& family, Location& locations)
                 case 1:
                     SelectLocation(locations, family);
                     // Exit to main loop.
-                    bChoiceSelect = false;
-                    bExit = false;
+                    return;
+
                     break;
                 case 2:
                     ActivitiesInEachLocation(locations);
@@ -438,12 +476,11 @@ void StartupMenu(Location& locations, Admin& admin)
 
 int main()
 {
-    std::cout << "Welcome to the holiday program \n";
     Location locations;
     Admin admin(locations);
     // A user will either load an existing family or create a new one
     // OR an admin can log in to the system
     StartupMenu(locations, admin);
-
+    
     std::cout << "Thank you using the program.\n";
 }

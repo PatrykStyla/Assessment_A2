@@ -41,12 +41,8 @@ public:
 
     std::vector<std::unique_ptr<InvividualActivity>>& GetActivities();
 
-    void SetAvailableLocations(std::string);
-    void SetAvailableLocations(std::string, int);
     std::vector<std::vector<std::string>> GetAvailableLocations();
 
-    void SetAvailableActivities(std::string);
-    void SetAvailableActivities(std::string, int);
     std::vector<std::vector<std::string>> GetAvailableActivities();
 private:
     std::vector<IndividualLocation> Locations;

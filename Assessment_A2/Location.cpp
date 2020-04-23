@@ -352,9 +352,8 @@ void Location::EditActivity(int iIndex)
     do 
     {
         std::cout << "1) Edit the activity name.\n"
-            << "2) Edit the activities available at each location.\n"
-            << "3) Edit the price.\n"
-            << "4) Print activities for the location.\n"
+            << "2) Edit the price.\n"
+            << "3) Print activities for the location.\n"
             << "0) Exit.\n";
 
         iChoice = ValidateNumberInput();
@@ -380,10 +379,9 @@ void Location::EditActivity(int iIndex)
             }
 
             Activities.at(iIndex)->m_sActivity = sNewActivityName;
+            std::cout << "\nName changed successfully.\n";
             break;
-        case 2: // 
-            break;
-        case 3:// Edit activity price
+        case 2:// Edit activity price
             std::cout << "Please enter the new price.\n";
             do 
             {
@@ -396,7 +394,7 @@ void Location::EditActivity(int iIndex)
 
             Activities.at(iIndex)->m_fCostPerPerson = fNewActivityprice;
             break;
-        case 4: // Print activities for the location
+        case 3: // Print activities for the location
             PrintAttractions(*this, iIndex);
             break;
         default:
@@ -445,7 +443,7 @@ void Location::RemoveActivity(int iIndex)
         }
     }
 
-    std::cout << "Activity removed successfully.\n";
+    std::cout << "Activities removed successfully.\n\n";
 }
 
 void Location::RemoveActivityFromLocation(int iIndexLocation, int iIndexActivity)
@@ -503,25 +501,10 @@ std::vector<std::unique_ptr<Location::InvividualActivity>>& Location::GetActivit
     return Activities;
 }
 
-void Location::SetAvailableLocations(std::string sString)
-{
-}
-
-void Location::SetAvailableLocations(std::string sString, int iIndex)
-{
-}
 
 std::vector<std::vector<std::string>> Location::GetAvailableLocations()
 {
     return m_sAvailableLocations;
-}
-
-void Location::SetAvailableActivities(std::string sString)
-{
-}
-
-void Location::SetAvailableActivities(std::string sString, int iIndex)
-{
 }
 
 std::vector<std::vector<std::string>> Location::GetAvailableActivities()

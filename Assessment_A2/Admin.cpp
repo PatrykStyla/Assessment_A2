@@ -45,6 +45,27 @@ void Admin::LoadFromJSON()
         m_fVAT = j["Admin"]["VAT"].get<float>();
         m_fDiscount = j["Admin"]["Discount"].get<float>();
     }
+    else
+    {
+        // The file was not present for some reason. 
+        // Recreate it using the default values
+        json j;
+
+        j["Admin"]["sUserName"] = m_sDefaultUsername;
+        j["Admin"]["sPassword"] = m_sDefaultPassword;
+        j["Admin"]["VAT"] = 1.2;
+        j["Admin"]["Discount"] = 0.9;
+
+        m_fVAT = 1.2f;
+        m_fDiscount = 0.9f;
+
+        std::ofstream Locations;
+        Locations.open("admin.json");
+        Locations << j.dump();
+        Locations.close();
+        // Load the data into memory
+        LoadFromJSON();
+    }
     i.close();
 }
 
@@ -430,7 +451,8 @@ void Admin::RemoveActivity()
 
         std::cout << "Are you sure you wish to delete "
             << m_locations->GetActivities().at(iChoice)->m_sActivity << "?\n\n"
-            << "NOTE: Removing an activity will remove it from the corresponding locations. Do you want to see the locations that will be affected?\n";
+            << "NOTE: Removing an activity will remove it from the corresponding locations.\n" 
+            << "Do you want to see the locations that will be affected?\n";
         do
         {
             GetStringInput(sChoice);
@@ -438,7 +460,31 @@ void Admin::RemoveActivity()
 
         if (bMore)
         {
-            m_locations->RemoveActivity(iChoice);
+            int ii = 0;
+            // find the pointer to the activity that will be removed
+            auto DeletedReference = m_locations->GetActivities().at(iChoice).get();
+            std::cout << "The activity will be removed from:\n";
+            // loop over all locations and delete any reference with that pointer
+            for (auto& loc : m_locations->GetLocations())
+            {
+                for (size_t i = 0; i < loc.Activities.size(); i++)
+                {
+                    if (DeletedReference == loc.Activities.at(i))
+                    { // If the deleted reference matches that on the object that means the array at this index can be erased
+                        std::cout << ii + 1 << ") " << m_locations->GetLocations().at(ii).m_sLocation << "\n";
+                        ii++;
+                    }
+                }
+
+            }
+            std::cout << "\nAre you sure you want to proceed?\n\n";
+            GetStringInput(sChoice);
+            RegexYesNo(bDelete, sChoice);
+
+            if (bDelete)
+            {
+                m_locations->RemoveActivity(iChoice);
+            }
 
             std::cout << "1: Remove another activity.\n"
                 << "0: Exit.\n";
@@ -446,6 +492,8 @@ void Admin::RemoveActivity()
         }
         else
         {
+            m_locations->RemoveActivity(iChoice);
+
             std::cout << "1: Remove another activity.\n"
                 << "0: Exit.\n\n";
             AnotherLocation(bExit);
